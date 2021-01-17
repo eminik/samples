@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class Bandit:
-    def __init__(self, m: float, lower_bound: float = None, upper_bound:float = None):
+    def __init__(self, m: float, lower_bound: float = None, upper_bound: float = None):
         """
         Simulates bandit.
 
