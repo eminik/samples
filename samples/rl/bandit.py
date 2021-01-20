@@ -36,7 +36,7 @@ class Bandit:
         """
         Simulate pulling the arm of the bandit.
         Normal distribution with mu = self.m and sigma = 1. If lower_bound or upper_bound are defined then the
-        distribution will be truncated (which will affect the mean too).
+        distribution will be truncated.
         """
         n = 10
         possible_rewards = np.random.randn(n) + self.m
