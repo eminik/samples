@@ -1,22 +1,47 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 
-def in_circle(xy, centre, radius):
-    return (xy[0] - centre[0]) ** 2 + (xy[1] - centre[1]) ** 2 < radius ** 2
+class PiEstimator:
+    def __init__(self):
+        self.total_samples = 0
+        self.total_in_circle = 0
+        self.x_centre = 0.5
+        self.y_centre = 0.5
+        self.radius = 0.5
+        self.box_area = 1
 
+    def reset(self):
+        self.total_samples = 0
+        self.total_in_circle = 0
 
-def calculate_pi(n=10000, shrink=1):
-    centre = np.array([0.5, 0.5]) / shrink
-    radius = 0.5 / shrink
-    box_area = (1 / shrink) ** 2
-    points = np.random.uniform(0, 1 / shrink, size=(n, 2))
+    def is_point_in_circle(self, x, y):
+        return  (x - self.x_centre) ** 2 + (y - self.y_centre) ** 2 < self.radius ** 2
 
-    points_classifications = np.apply_along_axis(lambda xy: in_circle(xy, centre, radius), axis=1, arr=points)
-    area = np.mean(points_classifications) * box_area
+    def current_pi_estimate(self):
+        """
+        Since (Circle Area) = pi * R^2 that means pi = (Circle Area) / R ** 2
+        :return: pi estimate
+        """
+        circle_area_estimate = (self.total_in_circle / self.total_samples) * self.box_area
+        return circle_area_estimate / self.radius ** 2
 
-    plt.plot(points[points_classifications == 0, 0], points[points_classifications == 0, 1], 'b*')
-    plt.plot(points[points_classifications, 0], points[points_classifications, 1], 'r*')
-    plt.show()
+    def sample_point(self):
+        x, y = np.random.uniform(0, 1, 2)
+        self.total_samples += 1
 
-    return area / radius ** 2
+        if self.is_point_in_circle(x, y):
+            self.total_in_circle += 1
+
+        return x, y
+
+    def sample_points(self, n=100):
+        """Faster than just sampling one point at a time."""
+        points = np.random.uniform(0, 1, (n, 2))
+        points_classifications = np.apply_along_axis(
+            lambda xy: self.is_point_in_circle(xy[0], xy[1]),
+            axis=1,
+            arr=points,
+        )
+
+        self.total_samples += n
+        self.total_in_circle += np.sum(points_classifications)
