@@ -15,7 +15,7 @@ class PiEstimator:
         self.total_in_circle = 0
 
     def is_point_in_circle(self, x, y):
-        return  (x - self.x_centre) ** 2 + (y - self.y_centre) ** 2 < self.radius ** 2
+        return (x - self.x_centre) ** 2 + (y - self.y_centre) ** 2 < self.radius ** 2
 
     def current_pi_estimate(self):
         """

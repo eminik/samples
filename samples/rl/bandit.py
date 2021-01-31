@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class Bandit:
-    def __init__(self, m: float, lower_bound: float = None, upper_bound: float = None):
+    def __init__(self, m: float, lower_bound: float = None, upper_bound: float = None, sigma=1):
         """
         Simulates bandit.
 
@@ -28,6 +28,7 @@ class Bandit:
         """
 
         self.m = m
+        self.sigma = sigma
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         self.id = uuid4()
@@ -35,11 +36,11 @@ class Bandit:
     def pull(self):
         """
         Simulate pulling the arm of the bandit.
-        Normal distribution with mu = self.m and sigma = 1. If lower_bound or upper_bound are defined then the
+        Normal distribution with mu = self.m and sigma = np.sigma. If lower_bound or upper_bound are defined then the
         distribution will be truncated.
         """
         n = 10
-        possible_rewards = np.random.randn(n) + self.m
+        possible_rewards = self.sigma * np.random.randn(n) + self.m
 
         allowed = np.array([True] * n)
         if self.lower_bound is not None:
@@ -50,12 +51,30 @@ class Bandit:
         return possible_rewards[allowed][0]
 
 
+class BernoulliBandit:
+    def __init__(self, p: float):
+        """
+        Simulates bandit.
+
+        Args:
+            p: Probability of success.
+        """
+        self.p = p
+        self.id = uuid4()
+
+    def pull(self):
+        """
+        Simulate pulling the arm of the bandit.
+        """
+        return np.random.binomial(1, self.p, size=1)[0]
+
+
 class BanditRewardsLog:
     def __init__(self):
         self.total_actions = 0
         self.total_rewards = 0
         self.all_rewards = []
-        self.record = defaultdict(lambda: dict(actions=0, reward=0))
+        self.record = defaultdict(lambda: dict(actions=0, reward=0, reward_squared=0))
 
     def record_action(self, bandit, reward):
         self.total_actions += 1
@@ -63,6 +82,7 @@ class BanditRewardsLog:
         self.all_rewards.append(reward)
         self.record[bandit.id]['actions'] += 1
         self.record[bandit.id]['reward'] += reward
+        self.record[bandit.id]['reward_squared'] += reward ** 2
 
     def __getitem__(self, bandit):
         return self.record[bandit.id]
