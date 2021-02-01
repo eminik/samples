@@ -95,7 +95,7 @@ class UCB1TunedAgent(UCBAgent):
         return 'UCB1Tuned()'
 
 
-class UCB1Normal(UCBAgent):
+class UCB1NormalAgent(UCBAgent):
     def initialise(self):
         if self.initialised:
             logger.info('Initialisation step has been executed before.')
