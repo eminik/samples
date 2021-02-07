@@ -8,7 +8,6 @@ from typing import List
 from uuid import uuid4
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 from samples.rl.errors import NoBanditsError
 
@@ -111,18 +110,3 @@ class Agent(ABC):
     def take_actions(self, n: int):
         for _ in range(n):
             self.take_action()
-
-
-def compare_agents(agents: List[Agent], bandits: List[Bandit], iterations: int, show_plot=True):
-    for agent in agents:
-        logger.info("Running for agent = %s", agent)
-        agent.bandits = bandits
-        agent.take_actions(iterations)
-        if show_plot:
-            plt.plot(np.cumsum(agent.rewards_log.all_rewards), label=str(agent))
-
-    if show_plot:
-        plt.xlabel("iteration")
-        plt.ylabel("total rewards")
-        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-        plt.show()
