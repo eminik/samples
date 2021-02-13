@@ -36,4 +36,3 @@ def compare_agents(
         plt.ylabel("total rewards")
         plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         plt.show()
-
